@@ -1,0 +1,8 @@
+let n = 5;
+let result = 1;
+
+repeat (n) {
+    result = result * 2;
+}
+
+print(result);

@@ -1,0 +1,13 @@
+let a = 15;
+let b = 20;
+
+if (a < b) {
+    print(a);
+} else {
+    print(b);
+}
+
+repeat (3) {
+    let x = 100;
+    print(x);
+}
