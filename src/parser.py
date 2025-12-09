@@ -1,5 +1,5 @@
 from tokens import TokenType
-from ast import *
+import ast as ast_nodes
 
 class Parser:
     def __init__(self, tokens):
@@ -7,6 +7,8 @@ class Parser:
         self.pos = 0
     
     def current_token(self):
+        if self.pos >= len(self.tokens):
+            return self.tokens[-1]  # Return EOF token
         return self.tokens[self.pos]
     
     def advance(self):
@@ -23,7 +25,7 @@ class Parser:
         statements = []
         while self.current_token().type != TokenType.EOF:
             statements.append(self.parse_statement())
-        return Program(statements)
+        return ast_nodes.Program(statements)
     
     def parse_statement(self):
         token = self.current_token()
@@ -48,14 +50,14 @@ class Parser:
         self.expect(TokenType.ASSIGN)
         expression = self.parse_expression()
         self.expect(TokenType.SEMICOLON)
-        return LetStatement(identifier, expression)
+        return ast_nodes.LetStatement(identifier, expression)
     
     def parse_assignment(self):
         identifier = self.expect(TokenType.IDENTIFIER).value
         self.expect(TokenType.ASSIGN)
         expression = self.parse_expression()
         self.expect(TokenType.SEMICOLON)
-        return LetStatement(identifier, expression)
+        return ast_nodes.LetStatement(identifier, expression)
     
     def parse_if(self):
         self.expect(TokenType.IF)
@@ -77,7 +79,7 @@ class Parser:
                 else_block.append(self.parse_statement())
             self.expect(TokenType.RBRACE)
         
-        return IfStatement(condition, then_block, else_block)
+        return ast_nodes.IfStatement(condition, then_block, else_block)
     
     def parse_repeat(self):
         self.expect(TokenType.REPEAT)
@@ -89,7 +91,7 @@ class Parser:
         while self.current_token().type != TokenType.RBRACE:
             block.append(self.parse_statement())
         self.expect(TokenType.RBRACE)
-        return RepeatStatement(count, block)
+        return ast_nodes.RepeatStatement(count, block)
     
     def parse_print(self):
         self.expect(TokenType.PRINT)
@@ -97,7 +99,7 @@ class Parser:
         expression = self.parse_expression()
         self.expect(TokenType.RPAREN)
         self.expect(TokenType.SEMICOLON)
-        return PrintStatement(expression)
+        return ast_nodes.PrintStatement(expression)
     
     def parse_expression(self):
         return self.parse_logical_or()
@@ -108,7 +110,7 @@ class Parser:
             op = self.current_token().value
             self.advance()
             right = self.parse_logical_and()
-            left = BinaryOp(left, op, right)
+            left = ast_nodes.BinaryOp(left, op, right)
         return left
     
     def parse_logical_and(self):
@@ -117,7 +119,7 @@ class Parser:
             op = self.current_token().value
             self.advance()
             right = self.parse_comparison()
-            left = BinaryOp(left, op, right)
+            left = ast_nodes.BinaryOp(left, op, right)
         return left
     
     def parse_comparison(self):
@@ -126,7 +128,7 @@ class Parser:
             op = self.current_token().value
             self.advance()
             right = self.parse_additive()
-            left = BinaryOp(left, op, right)
+            left = ast_nodes.BinaryOp(left, op, right)
         return left
     
     def parse_additive(self):
@@ -135,7 +137,7 @@ class Parser:
             op = self.current_token().value
             self.advance()
             right = self.parse_multiplicative()
-            left = BinaryOp(left, op, right)
+            left = ast_nodes.BinaryOp(left, op, right)
         return left
     
     def parse_multiplicative(self):
@@ -144,7 +146,7 @@ class Parser:
             op = self.current_token().value
             self.advance()
             right = self.parse_primary()
-            left = BinaryOp(left, op, right)
+            left = ast_nodes.BinaryOp(left, op, right)
         return left
     
     def parse_primary(self):
@@ -152,19 +154,19 @@ class Parser:
         
         if token.type == TokenType.NUMBER:
             self.advance()
-            return Number(token.value)
+            return ast_nodes.Number(token.value)
         elif token.type == TokenType.STRING_LITERAL:
             self.advance()
-            return String(token.value)
+            return ast_nodes.String(token.value)
         elif token.type == TokenType.TRUE:
             self.advance()
-            return Boolean(True)
+            return ast_nodes.Boolean(True)
         elif token.type == TokenType.FALSE:
             self.advance()
-            return Boolean(False)
+            return ast_nodes.Boolean(False)
         elif token.type == TokenType.IDENTIFIER:
             self.advance()
-            return Identifier(token.value)
+            return ast_nodes.Identifier(token.value)
         elif token.type == TokenType.LPAREN:
             self.advance()
             expr = self.parse_expression()
