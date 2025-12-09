@@ -1,13 +1,4 @@
-let a = 15;
-let b = 20;
-
-if (a < b) {
-    print(a);
-} else {
-    print(b);
-}
-
-repeat (3) {
-    let x = 100;
-    print(x);
-}
+let a = 10;
+let b = 5;
+let c = a - b;
+print(c);

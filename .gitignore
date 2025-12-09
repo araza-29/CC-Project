@@ -1,0 +1,15 @@
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Handwritten documentation
+handwritten/
+
+# Text files
+*.txt
+
+# IDE
+.vscode/
+.idea/

@@ -35,7 +35,17 @@ class VirtualMachine:
                 self.pc += 1
             elif op == 'LOAD':
                 var = parts[1]
-                self.stack.append(self.memory[var])
+                # Check if it's a number, boolean, or variable
+                if var == 'True':
+                    self.stack.append(True)
+                elif var == 'False':
+                    self.stack.append(False)
+                elif var.lstrip('-').isdigit():
+                    self.stack.append(int(var))
+                elif var.startswith('"'):
+                    self.stack.append(var.strip('"'))
+                else:
+                    self.stack.append(self.memory[var])
                 self.pc += 1
             elif op == 'ADD':
                 b = self.stack.pop()

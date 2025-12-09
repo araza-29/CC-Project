@@ -6,8 +6,13 @@ class CodeGenerator:
     def generate(self):
         for op, arg1, arg2, result in self.instructions:
             if op == '=':
-                self.code.append(f"PUSH {arg1}")
-                self.code.append(f"STORE {result}")
+                if isinstance(arg1, str) and not arg1.startswith('"'):
+                    # It's a variable, not a constant
+                    self.code.append(f"LOAD {arg1}")
+                    self.code.append(f"STORE {result}")
+                else:
+                    self.code.append(f"PUSH {arg1}")
+                    self.code.append(f"STORE {result}")
             elif op == '+':
                 self.code.append(f"LOAD {arg1}")
                 self.code.append(f"LOAD {arg2}")

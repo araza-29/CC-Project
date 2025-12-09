@@ -17,11 +17,15 @@ class SemanticAnalyzer:
             self.analyze(stmt)
     
     def analyze_LetStatement(self, node):
-        if node.identifier in self.symbol_table:
-            raise Exception(f"Variable '{node.identifier}' already defined")
-        
         expr_type = self.analyze(node.expression)
-        self.symbol_table[node.identifier] = expr_type
+        
+        if node.identifier in self.symbol_table:
+            # Variable reassignment - check type compatibility
+            if self.symbol_table[node.identifier] != expr_type:
+                raise Exception(f"Type mismatch: variable '{node.identifier}' is {self.symbol_table[node.identifier]}, cannot assign {expr_type}")
+        else:
+            # New variable declaration
+            self.symbol_table[node.identifier] = expr_type
     
     def analyze_IfStatement(self, node):
         cond_type = self.analyze(node.condition)

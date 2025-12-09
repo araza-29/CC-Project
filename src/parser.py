@@ -36,11 +36,21 @@ class Parser:
             return self.parse_repeat()
         elif token.type == TokenType.PRINT:
             return self.parse_print()
+        elif token.type == TokenType.IDENTIFIER:
+            # Handle assignment (reassignment without 'let')
+            return self.parse_assignment()
         else:
             raise Exception(f"Unexpected token: {token}")
     
     def parse_let(self):
         self.expect(TokenType.LET)
+        identifier = self.expect(TokenType.IDENTIFIER).value
+        self.expect(TokenType.ASSIGN)
+        expression = self.parse_expression()
+        self.expect(TokenType.SEMICOLON)
+        return LetStatement(identifier, expression)
+    
+    def parse_assignment(self):
         identifier = self.expect(TokenType.IDENTIFIER).value
         self.expect(TokenType.ASSIGN)
         expression = self.parse_expression()
